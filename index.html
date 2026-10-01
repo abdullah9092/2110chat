@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en" class=""><head><script>window.livecodes = window.livecodes || {};</script><title>Untitled Project</title><meta name="title" content="Untitled Project"><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0"><link rel="stylesheet" href="./style.css"><script src="https://cdn.jsdelivr.net/npm/es-module-shims@1.10.0/dist/es-module-shims.js" async=""></script><script type="importmap">{
+  "imports": {}
+}</script></head><body>
+
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>2110 Chat</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Arial,Helvetica,sans-serif;background:#dfe5e8;color:#111}
+button,input{font:inherit}.hidden{display:none!important}
+.screen{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+.card{width:min(440px,100%);background:#fff;border-radius:14px;padding:28px;box-shadow:0 8px 30px #0002}
+.logo{font-size:32px;font-weight:700;text-align:center;color:#128c7e;margin-bottom:8px}
+.sub{text-align:center;color:#667;margin-bottom:24px}
+input{width:100%;padding:13px;border:1px solid #ccd2d5;border-radius:9px;margin:7px 0 12px;outline:none}
+input:focus{border-color:#128c7e}.btn{border:0;border-radius:9px;padding:12px 16px;background:#128c7e;color:#fff;cursor:pointer;width:100%;font-weight:700}
+.btn.secondary{background:#e8efed;color:#128c7e}.btn.danger{background:#d9534f}.btn.small{width:auto;padding:8px 11px;font-size:13px}
+.avatar{width:82px;height:82px;border-radius:50%;object-fit:cover;background:#ddd;display:block;margin:0 auto 15px}
+.profile-row{display:flex;gap:14px;align-items:center;margin-bottom:20px}
+.profile-row .avatar{margin:0;width:62px;height:62px}
+#app{height:100vh;display:flex;background:#fff}
+.sidebar{width:340px;border-right:1px solid #ddd;background:#f7f9f9;display:flex;flex-direction:column}
+.topbar{height:68px;background:#ededed;display:flex;align-items:center;padding:10px 14px;gap:10px}
+.topbar .avatar{width:45px;height:45px;margin:0}.topbar .title{font-weight:700;flex:1}
+.iconbtn{border:0;background:transparent;font-size:20px;cursor:pointer}
+.group-card{margin:12px;background:#fff;border:1px solid #ddd;border-radius:12px;padding:12px;display:flex;align-items:center;gap:10px;cursor:pointer}
+.group-card img{width:50px;height:50px;border-radius:50%;object-fit:cover}.group-card b{display:block}.muted{color:#777;font-size:13px}
+.chat{flex:1;display:flex;flex-direction:column;background:#efeae2}
+.chat-head{height:68px;background:#ededed;display:flex;align-items:center;padding:8px 15px;gap:12px}
+.chat-head img{width:45px;height:45px;border-radius:50%;object-fit:cover}.chat-head .name{font-weight:bold}.chat-head .members{font-size:12px;color:#777}
+.messages{flex:1;overflow:auto;padding:20px;background-image:radial-gradient(#00000008 1px,transparent 1px);background-size:22px 22px}
+.bubble{max-width:70%;padding:9px 11px;border-radius:9px;margin:7px 0;background:#fff;box-shadow:0 1px 1px #0002}
+.bubble.mine{margin-left:auto;background:#d9fdd3}.sender{font-size:12px;color:#128c7e;font-weight:bold;margin-bottom:3px}
+.system{text-align:center;background:#e1f2d9;color:#53645a;width:max-content;max-width:90%;margin:10px auto;padding:6px 12px;border-radius:8px;font-size:12px}
+.composer{display:flex;gap:8px;padding:9px;background:#f0f0f0}.composer input{margin:0;flex:1}.composer button{width:auto}
+.empty{margin:auto;text-align:center;color:#777}
+.modal{position:fixed;inset:0;background:#0007;display:flex;align-items:center;justify-content:center;padding:20px;z-index:5}
+.modal .card{max-height:90vh;overflow:auto}
+.member{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid #eee}.member img{width:38px;height:38px;border-radius:50%;object-fit:cover}.member .grow{flex:1}
+.actions{display:flex;gap:6px;flex-wrap:wrap}
+.note{font-size:12px;color:#777;line-height:1.5}
+@media(max-width:700px){.sidebar{width:90px}.sidebar .topbar .title,.sidebar .group-card div{display:none}.group-card{justify-content:center}.group-card img{width:54px;height:54px}.chat-head{padding-left:8px}}
+</style>
+
+
+
+<div id="auth" class="screen">
+  <div class="card">
+    <div class="logo">2110 Chat</div>
+    <div class="sub">Create your account</div>
+    <form id="signupForm">
+      <input id="signupName" placeholder="Your name" required="" maxlength="30">
+      <input id="signupPassword" type="password" placeholder="Password" required="" minlength="4">
+      <button class="btn">Sign up</button>
+    </form>
+    <p class="note">Demo version: account data is stored only in this browser using localStorage. Do not use a real password.</p>
+  </div>
+</div>
+
+<div id="profileSetup" class="screen hidden">
+  <div class="card">
+    <div class="logo">Customize profile</div>
+    <div class="sub">Set your name and profile picture</div>
+    <img id="setupAvatar" class="avatar" src="">
+    <input id="profileName" maxlength="30" placeholder="Display name">
+    <input id="profilePic" type="file" accept="image/*">
+    <button id="saveProfile" class="btn">Continue</button>
+  </div>
+</div>
+
+<div id="welcome" class="screen hidden">
+  <div class="card">
+    <div class="logo">2110 Chat</div>
+    <h2>Welcome!</h2>
+    <p>welcome to 2110 chat website make your own group</p>
+    <button id="closeWelcome" class="btn">Close message</button>
+  </div>
+</div>
+
+<div id="app" class="hidden">
+  <aside class="sidebar">
+    <div class="topbar">
+      <img id="meAvatar" class="avatar" src="">
+      <div class="title" id="meName"></div>
+      <button class="iconbtn" id="createGroupBtn" title="Create group">＋</button>
+    </div>
+    <div id="groups"></div>
+  </aside>
+  <main class="chat">
+    <div id="chatEmpty" class="empty">
+      <h2>2110 Chat</h2><p>Create or select a group to start chatting.</p>
+    </div>
+    <div id="chatArea" class="hidden" style="display:flex;flex-direction:column;height:100%">
+      <div class="chat-head">
+        <img id="groupAvatar" src="">
+        <div style="flex:1"><div class="name" id="groupName"></div><div class="members" id="memberCount"></div></div>
+        <button class="iconbtn" id="groupSettings" title="Group settings">⚙</button>
+      </div>
+      <div class="messages" id="messages"></div>
+      <form class="composer" id="messageForm">
+        <input id="messageInput" autocomplete="off" placeholder="Type a message...">
+        <button class="btn" type="submit">Send</button>
+      </form>
+    </div>
+  </main>
+</div>
+
+<div id="groupModal" class="modal hidden">
+  <div class="card">
+    <h2>Create group</h2>
+    <input id="newGroupName" placeholder="Group name" maxlength="40">
+    <input id="newGroupPic" type="file" accept="image/*">
+    <div class="actions">
+      <button class="btn" id="makeGroup">Create</button>
+      <button class="btn secondary" onclick="closeModal('groupModal')">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<div id="settingsModal" class="modal hidden">
+  <div class="card">
+    <h2>Group settings</h2>
+    <input id="editGroupName" placeholder="Group name" maxlength="40">
+    <input id="editGroupPic" type="file" accept="image/*">
+    <button class="btn" id="saveGroupSettings">Save group</button>
+    <hr>
+    <h3>Invite people</h3>
+    <p class="note">Share this demo invite code/link with another browser/user.</p>
+    <input id="inviteLink" readonly="">
+    <button class="btn secondary" id="copyInvite">Copy invite</button>
+    <h3>Members</h3>
+    <div id="memberList"></div>
+    <button class="btn secondary" onclick="closeModal('settingsModal')">Close</button>
+  </div>
+</div>
+
+<script>
+const DEFAULT_AVATAR='data:image/svg+xml;charset=UTF-8,'+encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200"><rect width="200" height="200" fill="#d9e0e2"/><circle cx="100" cy="78" r="42" fill="#9aa6aa"/><path d="M35 185c8-48 40-70 65-70s57 22 65 70" fill="#9aa6aa"/></svg>`);
+let db=JSON.parse(localStorage.getItem('2110chatDB')||'{"users":{},"groups":{}}');
+let me=null,currentGroup=null;
+
+function save(){localStorage.setItem('2110chatDB',JSON.stringify(db))}
+function id(){return Math.random().toString(36).slice(2)+Date.now().toString(36)}
+function show(x){document.getElementById(x).classList.remove('hidden')}
+function hide(x){document.getElementById(x).classList.add('hidden')}
+function closeModal(x){hide(x)}
+function fileToData(file){return new Promise((res,rej)=>{if(!file)return res(null);const r=new FileReader();r.onload=()=>res(r.result);r.onerror=rej;r.readAsDataURL(file)})}
+
+document.getElementById('signupForm').onsubmit=async e=>{
+ e.preventDefault();
+ const name=signupName.value.trim(), password=signupPassword.value;
+ const uid=id(); me={id:uid};
+ db.users[uid]={id:uid,name,password,avatar:DEFAULT_AVATAR};
+ save(); hide('auth'); profileName.value=name; setupAvatar.src=DEFAULT_AVATAR; show('profileSetup');
+};
+profilePic.onchange=async()=>{const x=await fileToData(profilePic.files[0]);if(x)setupAvatar.src=x}
+saveProfile.onclick=async()=>{
+ const u=db.users[me.id];u.name=profileName.value.trim()||u.name;
+ const p=await fileToData(profilePic.files[0]);if(p)u.avatar=p;save();
+ hide('profileSetup');show('welcome');
+};
+closeWelcome.onclick=()=>{hide('welcome');showApp()}
+
+function showApp(){hide('auth');hide('profileSetup');hide('welcome');show('app');renderMe();renderGroups()}
+function renderMe(){const u=db.users[me.id];meName.textContent=u.name;meAvatar.src=u.avatar}
+function renderGroups(){
+ groups.innerHTML='';
+ Object.values(db.groups).filter(g=>g.members.some(m=>m.id===me.id)).forEach(g=>{
+   const d=document.createElement('div');d.className='group-card';d.innerHTML=`<img src="${g.avatar}"><div><b>${escapeHtml(g.name)}</b><span class="muted">${g.messages.length} messages</span></div>`;
+   d.onclick=()=>selectGroup(g.id);groups.appendChild(d)
+ })
+}
+createGroupBtn.onclick=()=>{newGroupName.value='';newGroupPic.value='';show('groupModal')}
+makeGroup.onclick=async()=>{
+ const name=newGroupName.value.trim();if(!name)return alert('Enter a group name.');
+ const avatar=await fileToData(newGroupPic.files[0])||DEFAULT_AVATAR,gid=id(),u=db.users[me.id];
+ db.groups[gid]={id:gid,name,avatar,owner:me.id,members:[{id:me.id,name:u.name,avatar:u.avatar,muted:false}],messages:[{type:'system',text:u.name+' created the group'}],invite:id().slice(0,8)};
+ save();closeModal('groupModal');renderGroups();selectGroup(gid);
+}
+function selectGroup(gid){
+ currentGroup=gid;const g=db.groups[gid];hide('chatEmpty');show('chatArea');
+ groupName.textContent=g.name;groupAvatar.src=g.avatar;memberCount.textContent=g.members.length+' member(s)';
+ renderMessages();renderGroups();
+}
+function renderMessages(){
+ const g=db.groups[currentGroup];messages.innerHTML='';
+ g.messages.forEach(m=>{
+  const d=document.createElement('div');
+  if(m.type==='system'){d.className='system';d.textContent=m.text}
+  else {d.className='bubble '+(m.userId===me.id?'mine':'');d.innerHTML=`<div class="sender">${escapeHtml(m.name)}</div><div>${escapeHtml(m.text)}</div>`}
+  messages.appendChild(d)
+ });messages.scrollTop=messages.scrollHeight
+}
+messageForm.onsubmit=e=>{
+ e.preventDefault();const text=messageInput.value.trim();if(!text||!currentGroup)return;
+ const g=db.groups[currentGroup],member=g.members.find(m=>m.id===me.id);
+ if(member?.muted){alert('You are muted in this group.');return}
+ g.messages.push({type:'chat',userId:me.id,name:db.users[me.id].name,text});messageInput.value='';save();renderMessages()
+}
+groupSettings.onclick=()=>{
+ const g=db.groups[currentGroup];editGroupName.value=g.name;inviteLink.value=location.href.split('#')[0]+'#join='+g.id+'-'+g.invite;
+ renderMembers();show('settingsModal')
+}
+saveGroupSettings.onclick=async()=>{
+ const g=db.groups[currentGroup];if(g.owner!==me.id)return;
+ g.name=editGroupName.value.trim()||g.name;const p=await fileToData(editGroupPic.files[0]);if(p)g.avatar=p;
+ save();selectGroup(g.id);closeModal('settingsModal')
+}
+copyInvite.onclick=async()=>{await navigator.clipboard?.writeText(inviteLink.value);alert('Invite copied.')}
+function renderMembers(){
+ const g=db.groups[currentGroup];memberList.innerHTML='';
+ g.members.forEach(m=>{
+  const d=document.createElement('div');d.className='member';
+  d.innerHTML=`<img src="${m.avatar}"><div class="grow"><b>${escapeHtml(m.name)}</b><div class="muted">${m.id===g.owner?'Owner':''}${m.muted?' • Muted':''}</div></div>`;
+  if(g.owner===me.id&&m.id!==me.id){
+   const a=document.createElement('div');a.className='actions';
+   const mute=document.createElement('button');mute.className='btn small';mute.textContent=m.muted?'Unmute':'Mute';mute.onclick=()=>toggleMute(m.id);
+   const kick=document.createElement('button');kick.className='btn small danger';kick.textContent='Remove';kick.onclick=()=>removeMember(m.id);
+   a.append(mute,kick);d.append(a)
+  }
+  memberList.append(d)
+ })
+}
+function toggleMute(uid){const g=db.groups[currentGroup],m=g.members.find(x=>x.id===uid);m.muted=!m.muted;g.messages.push({type:'system',text:m.name+(m.muted?' was muted':' was unmuted')});save();renderMembers();renderMessages()}
+function removeMember(uid){const g=db.groups[currentGroup],m=g.members.find(x=>x.id===uid);if(!confirm('Remove '+m.name+' from the group?'))return;g.members=g.members.filter(x=>x.id!==uid);g.messages.push({type:'system',text:m.name+' was removed from the group'});save();renderMembers();renderMessages();memberCount.textContent=g.members.length+' member(s)';renderGroups()}
+function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+
+// Demo invite joining: open a copied #join=GROUPID-INVITE link in another browser/profile.
+async function handleInvite(){
+ const h=location.hash;if(!h.startsWith('#join='))return;
+ const val=h.slice(6).split('-');if(val.length<2)return;
+ const g=db.groups[val[0]];if(!g||g.invite!==val[1])return;
+ if(!me){alert('Sign up first, then open the invite link again.');return}
+ if(!g.members.some(m=>m.id===me.id)){
+  const u=db.users[me.id];g.members.push({id:me.id,name:u.name,avatar:u.avatar,muted:false});
+  g.messages.push({type:'system',text:u.name+' joined the group'});save();
+ }
+ selectGroup(g.id);history.replaceState(null,'',location.pathname+location.search);
+}
+window.addEventListener('load',()=>{
+ const saved=localStorage.getItem('2110_currentUser');
+ if(saved&&db.users[saved]){me={id:saved};showApp();handleInvite()}else show('auth');
+});
+window.addEventListener('hashchange',handleInvite);
+window.addEventListener('beforeunload',()=>{if(me)localStorage.setItem('2110_currentUser',me.id)});
+</script>
+
+
+<title>2110 Chat</title><script src="./script.js"></script></body></html>
